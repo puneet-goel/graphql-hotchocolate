@@ -1,8 +1,8 @@
 ﻿using Bogus;
 
-namespace GraphQL.Schema
+namespace GraphQL.Schema.Queries
 {
-   public class Query
+    public class Query
     {
         private readonly Faker<InstructorType> _instructorFaker;
         private readonly Faker<StudentType> _studentFaker;
@@ -31,7 +31,7 @@ namespace GraphQL.Schema
         }
 
         public IEnumerable<CourseType> GetCourses()
-        { 
+        {
             return _courseFaker.Generate(5);
         }
 
