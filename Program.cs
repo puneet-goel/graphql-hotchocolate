@@ -2,6 +2,7 @@ using GraphQL.Schema.Mutation;
 using GraphQL.Schema.Queries;
 using GraphQL.Schema.Subscriptions;
 using GraphQL.Services;
+using GraphQL.Services.Courses;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,9 +14,14 @@ builder.Services
     .AddMutationType<Mutation>()
     .AddSubscriptionType<Subscription>();
 
-IConfiguration configuration = new ConfigurationBuilder().Build();
+IConfiguration configuration = new ConfigurationBuilder()
+    .SetBasePath(Environment.CurrentDirectory)
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .Build();
 string connectionString = configuration.GetConnectionString("default");
 builder.Services.AddPooledDbContextFactory<SchoolDbContext>(o => o.UseSqlite(connectionString));
+
+builder.Services.AddScoped<CourseRepository>();
 
 var app = builder.Build();
 

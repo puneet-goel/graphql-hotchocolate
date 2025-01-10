@@ -1,47 +1,25 @@
-﻿using Bogus;
+﻿using GraphQL.DTOs;
+using GraphQL.Services.Courses;
 
 namespace GraphQL.Schema.Queries
 {
     public class Query
     {
-        private readonly Faker<InstructorType> _instructorFaker;
-        private readonly Faker<StudentType> _studentFaker;
-        private readonly Faker<CourseType> _courseFaker;
+        private readonly CourseRepository _courseRepository;
 
-        public Query()
+        public Query(CourseRepository courseRepository)
         {
-            _instructorFaker = new Faker<InstructorType>()
-                .RuleFor(c => c.Id, f => Guid.NewGuid())
-                .RuleFor(c => c.FirstName, f => f.Name.FirstName())
-                .RuleFor(c => c.LastName, f => f.Name.LastName())
-                .RuleFor(c => c.Salary, f => f.Random.Double(0, 100000));
-
-            _studentFaker = new Faker<StudentType>()
-                .RuleFor(c => c.Id, f => Guid.NewGuid())
-                .RuleFor(c => c.FirstName, f => f.Name.FirstName())
-                .RuleFor(c => c.LastName, f => f.Name.LastName())
-                .RuleFor(c => c.GPA, f => f.Random.Double(1, 4));
-
-            _courseFaker = new Faker<CourseType>()
-                .RuleFor(c => c.Id, f => Guid.NewGuid())
-                .RuleFor(c => c.Name, f => f.Name.JobTitle())
-                .RuleFor(c => c.Subject, f => f.PickRandom<Subject>())
-                .RuleFor(c => c.Instructor, f => _instructorFaker.Generate())
-                .RuleFor(c => c.Students, f => _studentFaker.Generate(3));
+            _courseRepository = courseRepository;
         }
 
-        public IEnumerable<CourseType> GetCourses()
+        public async Task<IEnumerable<CourseDTO>> GetCourses()
         {
-            return _courseFaker.Generate(5);
+            return await _courseRepository.GetAll();
         }
 
-        public async Task<CourseType> GetCourseByIdAsync(Guid Id)
+        public async Task<CourseDTO> GetCourseByIdAsync(Guid id)
         {
-            await Task.Delay(1000);
-            CourseType x = _courseFaker.Generate();
-            x.Id = Id;
-
-            return x;
+            return await _courseRepository.GetById(id);
         }
 
         public string Instructions => "First graphql query";
